@@ -15,6 +15,9 @@ parser$add_argument("-w", "--window", type="integer", default=1000,
 parser$add_argument("-g", "--group", type="integer", default=10000, 
                     help="Size of window to group into [default 10000]",
                     metavar="number")
+parser$add_argument("-r", "--round", type="integer", default=3, 
+                    help="Round numbers to this many decimal places. Must be < 3 [default 3]",
+                    metavar="number")
 parser$add_argument("-f", "--function", type="character", default="mean", 
                     help="Function to apply to groups [default mean: other options are Mode, median, var, sd]",
                     metavar="string")
@@ -27,33 +30,37 @@ window_size <- args$window
 group_size <- args$group
 fun <- args$`function`
 chromosomal <- args$chromosomal
+r <- args$round
+
+# remove scientific notation
+options(scipen=999)
 
 # some parsing logic
 
 if(is.null(File)) {
-  stop("No input file detected.")
+  stop("[-]\tNo input file detected.")
 }
 
 # keep just for future dev potentially
 if(window_size != 1000) {
-  stop("Window size should be 1000bp (1kb).")
+  stop("[-]\tWindow size should be 1000bp (1kb).")
 }
 
 # could be more flexible..?
 group_size_options <- c(10000, 100000, 1000000)
 
 if(group_size %in% group_size_options == FALSE) {
-  stop("Group should be either 10000 (10kb), 100000 (100kb), or 1000000 (1Mb)")
+  stop("[-]\tGroup should be either 10000 (10kb), 100000 (100kb), or 1000000 (1Mb).")
 }
 
 fun_options <- c("mean", "Mode", "median", "var", "sd")
 
 if(fun %in% fun_options == FALSE) {
-  stop("Grouping function should be either mean, Mode, median, var, or sd")
+  stop("[-]\tGrouping function should be either mean, Mode, median, var, or sd.")
 }
 
-if(!is.logical(chromosomal)) {
-  stop("Chromosomal flag is boolean - TRUE or FALSE")
+if(r > 3) {
+  stop("[-]\tr should be < 3, as the original output is capped at 3 decimal places.")
 }
 
 # dinky mode function
@@ -72,7 +79,7 @@ calc_aggregations <- function(file, window_size, group_size, fun = c("mean", "Mo
   # column names will be consistent, so subset is okay here.
   column_names <- names(windows)[4:14]
   
-  if(chromosomal == TRUE) {
+  if(chromosomal) {
     chromosomal_table <- windows[, .(fun(get(column_names[1])), 
                 fun(get(column_names[2])),
                 fun(get(column_names[3])),
@@ -87,6 +94,9 @@ calc_aggregations <- function(file, window_size, group_size, fun = c("mean", "Mo
                 by = .(ID)]
     
     setnames(chromosomal_table, 2:12, column_names)
+    # do some rounding
+    rounding <- names(chromosomal_table)[2:12]
+    chromosomal_table[,(rounding) := round(.SD, r), .SDcols=rounding]
     
     return(chromosomal_table)
   }
@@ -125,6 +135,9 @@ calc_aggregations <- function(file, window_size, group_size, fun = c("mean", "Mo
                          "V10",
                          "V11"))
   setnames(grouped, 4:14, column_names)
+
+  rounding <- names(grouped)[4:14]
+  grouped[,(rounding) := round(.SD, r), .SDcols=rounding]
   
   return(grouped)
 }

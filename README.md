@@ -7,7 +7,8 @@ A tiny R script which takes the output of fasta_windows (<a href="https://github
 Run ` Rscript fw_group.R -h` to display the help.
 
 ```
-usage: fw_group.R [-h] [-t TSV] [-w number] [-g number] [-f string] [-c]
+usage: fw_group.R [-h] [-t TSV] [-w number] [-g number] [-r number]
+                  [-f string] [-c]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -16,6 +17,9 @@ optional arguments:
                         Size of window used in fasta_windows [fixed at 1000]
   -g number, --group number
                         Size of window to group into [default 10000]
+  -r number, --round number
+                        Round numbers to this many decimal places. Must be < 3
+                        [default 3]
   -f string, --function string
                         Function to apply to groups [default mean: other
                         options are Mode, median, var, sd]
@@ -44,11 +48,9 @@ Adding `-c` or `--chromosomal` averages across the contigs/scaffolds/chromsomes.
 
 Note that these statistics will be different from running fasta windows at a larger window size.
 
+Output is printed to stdout.
+
 ## Requirements
 
 - <a href="https://github.com/Rdatatable/data.table">data.table</a>
 - <a href="https://github.com/trevorld/r-argparse>">argparse</a>
-
-## TODO's
-
-- Sort out decimal rounding.
