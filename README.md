@@ -1,8 +1,10 @@
 # fw_group
 
-A tiny R script which takes the output of fasta_windows (<a href="https://github.com/tolkit/fasta_windows/tree/v2">version 2</a>) and aggregates the 1kb records. A small variety of grouping functions are supported.
+Two R scripts which take the output of fasta_windows (<a href="https://github.com/tolkit/fasta_windows/tree/v2">version 2</a>) and aggregates them.
 
-## Usage
+`fw_group` groups the output statistics file (containing GC content etc) into larger windows, and operating an aggregation function in the process. `fw_canon` canonicalises a kmer frequency array file from fasta_windows output.
+
+## fw_group.R
 
 Run ` Rscript fw_group.R -h` to display the help.
 
@@ -49,6 +51,18 @@ Adding `-c` or `--chromosomal` averages across the contigs/scaffolds/chromsomes.
 Note that these statistics will be different from running fasta windows at a larger window size.
 
 Output is printed to stdout.
+
+## fw_canon.R
+
+```
+usage: fw_canon.R [-h] [-t TSV]
+
+optional arguments:
+  -h, --help         show this help message and exit
+  -t TSV, --tsv TSV  input TSV file from fasta_windows output.
+```
+
+Only requires the dinuc/trinuc/tetranucleotide frequency array file. Prints to stdout.
 
 ## Requirements
 
