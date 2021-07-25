@@ -40,12 +40,12 @@ revcomp <- function(x) {
   kmers <- character(length(x))
 
   # loop over vector of kmers
-  for (i in 1:length(x)) {
+  for (i in seq_len(x)) {
     # bases assignement vector
     vector <- character(length(kmers[1]))
     bases <- strsplit(x[i], "")[[1]]
 
-    for (j in 1:length(bases)) {
+    for (j in seq_len(bases)) {
       # complement
       switch(bases[j],
         "A" = {
